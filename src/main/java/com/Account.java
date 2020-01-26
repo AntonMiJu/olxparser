@@ -6,6 +6,16 @@ public class Account {
     private String address;
     private String dateRegistered;
 
+    public Account() {
+    }
+
+    public Account(String phone, String name, String address, String dateRegistered) {
+        this.phone = phone;
+        this.name = name;
+        this.address = address;
+        this.dateRegistered = dateRegistered;
+    }
+
     public String getPhone() {
         return phone;
     }
