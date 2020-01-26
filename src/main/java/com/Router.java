@@ -16,9 +16,9 @@ public class Router {
 
     private void route() throws IOException {
         Document document = Jsoup.connect(url).get();
-        if (BaseURLStep.isResponsible(document)){
+        if (BaseURLStep.isResponsible(document)) {
             this.step = new BaseURLStep(document);
-        } else if (CategoryStep.isResponsible(document)){
+        } else if (CategoryStep.isResponsible(document)) {
             this.step = new CategoryStep(document);
         } else if (AdStep.isResponsible(document)) {
             this.step = new AdStep(document);
