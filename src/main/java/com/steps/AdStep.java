@@ -1,7 +1,6 @@
 package com.steps;
 
 import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 public class AdStep implements Step {
@@ -17,8 +16,7 @@ public class AdStep implements Step {
     }
 
     public void parse() {
-        String location = document.select("div.offer-user__address")
-                .select("address")
+        String location = document.select("address")
                 .select("p")
                 .first()
                 .text();
@@ -34,9 +32,11 @@ public class AdStep implements Step {
                 .first()
                 .text();
 
-        String phoneToken = document.select("section#body-container")
+        String htmlPhoneToken = document.select("section#body-container")
                 .select("script")
                 .first()
-                .text();
+                .html();
+
+        String phoneToken = htmlPhoneToken.substring(htmlPhoneToken.indexOf("'")+1, htmlPhoneToken.lastIndexOf("'"));
     }
 }
