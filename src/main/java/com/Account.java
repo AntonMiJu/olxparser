@@ -47,4 +47,14 @@ public class Account {
     public void setDateRegistered(String dateRegistered) {
         this.dateRegistered = dateRegistered;
     }
+
+    @Override
+    public String toString() {
+        return "Account{" +
+                "phone='" + phone + '\'' +
+                ", name='" + name + '\'' +
+                ", address='" + address + '\'' +
+                ", dateRegistered='" + dateRegistered + '\'' +
+                '}';
+    }
 }

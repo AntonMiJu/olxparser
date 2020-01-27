@@ -6,6 +6,7 @@ import java.util.List;
 
 public class DAO {
     public Account save(Account account){
+        System.out.println(account.toString());
         return null;
     }
 

@@ -1,11 +1,11 @@
 package com.steps;
 
-import org.jsoup.nodes.Document;
+import java.io.IOException;
 
 public interface Step {
-    static boolean isResponsible(Document document) {
+    static boolean isResponsible(String url) {
         return false;
     }
 
-    void parse();
+    void parse(String url) throws IOException;
 }
