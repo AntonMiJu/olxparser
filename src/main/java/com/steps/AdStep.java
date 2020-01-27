@@ -2,6 +2,7 @@ package com.steps;
 
 import com.Account;
 import com.utils.DAO;
+import com.utils.ExcelDAO;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -54,7 +55,7 @@ public class AdStep implements Step {
 
     private DAO getDao(){
         if (dao==null)
-            dao = new DAO();
+            dao = new ExcelDAO();
         return dao;
     }
 }

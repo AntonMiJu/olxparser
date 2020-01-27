@@ -4,17 +4,10 @@ import com.Account;
 
 import java.util.List;
 
-public class DAO {
-    public Account save(Account account){
-        System.out.println(account.toString());
-        return null;
-    }
+public interface DAO {
+    Account save(Account account);
 
-    public Account getByPhone(String phone){
-        return null;
-    }
+    Account getByPhone(String phone);
 
-    public List<Account> getByAddress(String address){
-        return null;
-    }
+    List<Account> getByAddress(String address);
 }
