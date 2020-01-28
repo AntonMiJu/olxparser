@@ -1,6 +1,7 @@
 package com.steps;
 
-import org.jsoup.Jsoup;
+import com.Router;
+import com.utils.Utils;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
@@ -8,28 +9,18 @@ import org.jsoup.select.Elements;
 import java.io.IOException;
 
 public class BaseURLStep implements Step {
-    private CategoryStep categoryStep;
-
-    public static boolean isResponsible(String url) throws IOException {
-        Elements el = Jsoup.connect(url).get().select("section#searchmain-container");
+    public static boolean isResponsible(Document document) throws IOException {
+        Elements el = document.select("section#searchmain-container");
         return !el.isEmpty();
     }
 
-    public void parse(String url) throws IOException{
-        Document document = Jsoup.connect(url).get();
-
+    public void parse(Document document) throws IOException {
         Elements linksOnCategories = document.select("section#searchmain-container")
                 .select("div.subcategories-list.clr")
                 .select("li.fleft")
                 .select("a[href]");
 
         for (Element el : linksOnCategories)
-            getCategoryStep().parse(el.attr("href"));
-    }
-
-    private CategoryStep getCategoryStep(){
-        if (categoryStep == null)
-            categoryStep = new CategoryStep();
-        return categoryStep;
+            new Router(Utils.defaultStep(el.attr("href"))).route();
     }
 }

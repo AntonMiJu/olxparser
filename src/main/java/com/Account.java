@@ -28,24 +28,27 @@ public class Account {
         return name;
     }
 
-    public void setName(String name) {
+    public Account setName(String name) {
         this.name = name;
+        return this;
     }
 
     public String getAddress() {
         return address;
     }
 
-    public void setAddress(String address) {
+    public Account setAddress(String address) {
         this.address = address;
+        return this;
     }
 
     public String getDateRegistered() {
         return dateRegistered;
     }
 
-    public void setDateRegistered(String dateRegistered) {
+    public Account setDateRegistered(String dateRegistered) {
         this.dateRegistered = dateRegistered;
+        return this;
     }
 
     @Override
