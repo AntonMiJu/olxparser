@@ -11,6 +11,7 @@ import org.jsoup.select.Elements;
 import java.io.IOException;
 
 public class AdStep implements Step {
+    public static final String PHONE_TEMPLATE = "https://www.olx.ua/uk/ajax/misc/contact/phone/%s/?pt=%s";
     private String cookie;
 
     public AdStep(String cookie) {
@@ -25,47 +26,63 @@ public class AdStep implements Step {
     public void parse(Document document) throws IOException {
         System.out.println(document.baseUri());
 
-        if (!document.select("div#offer_removed_by_user").isEmpty() || !document.select("div#offer_outdated").isEmpty())
+        if (isNotRelevantAd(document))
             return;
 
-        Element addressElement = document.select("address")
-                .first();
+        String address = extractAddress(document);
+        String name = extractName(document);
+        String dateRegistered = extractDate(document);
 
-        if (addressElement.html().contains("</a>"))
-            addressElement = addressElement.select("p").first();
+        Account account = new Account(name, address, dateRegistered);
 
-        String address = addressElement.ownText();
+        Utils utils = new Utils().setAccount(account);
 
-        Element nameElement = document.select("div.offer-user__details")
-                .select("h4")
-                .first();
+        String adId = StringUtils.substringBetween(document.baseUri(), "-ID", ".html");
+        String phoneUrl = String.format(PHONE_TEMPLATE, adId, extractPhoneToken(document));
 
-        if (nameElement.html().contains("</a>"))
-            nameElement = nameElement.select("a").first();
+        new Router(Utils.phoneStep(phoneUrl, document.baseUri(), cookie), utils).route();
+    }
 
-        String name = nameElement.text();
+    private boolean isNotRelevantAd(Document document) {
+        return !document.select("div#offer_removed_by_user").isEmpty() || !document.select("div#offer_outdated").isEmpty();
+    }
 
-        String dateRegistered = document.select("div.offer-user__details")
-                .select("span.user-since")
-                .first()
-                .text();
-
-        //TODO create class - temporary container and save account
-        Account account = new Account()
-                .setAddress(address)
-                .setDateRegistered(dateRegistered)
-                .setName(name);
-
+    private String extractPhoneToken(Document document) {
         String htmlPhoneToken = document.select("section#body-container")
                 .select("script")
                 .first()
                 .html();
 
-        String phoneToken = StringUtils.substringBetween(htmlPhoneToken, "'");
+        return StringUtils.substringBetween(htmlPhoneToken, "'");
+    }
 
-        String adId = StringUtils.substringBetween(document.baseUri(), "-ID", ".html");
-        String phoneUrl = String.format("https://www.olx.ua/uk/ajax/misc/contact/phone/%s/?pt=%s", adId, phoneToken);
+    private String extractDate(Document document) {
+        return document.select("div.offer-user__details")
+                    .select("span.user-since")
+                    .first()
+                    .text();
+    }
 
-        new Router(Utils.phoneStep(phoneUrl, document.baseUri(), cookie)).route();
+    private String extractName(Document document) {
+        Element nameElement = document.select("div.offer-user__details")
+                .select("h4")
+                .first();
+
+        if (nameElement.html().contains("</a>"))
+            nameElement = nameElement.select("a")
+                    .first();
+
+        return nameElement.text();
+    }
+
+    private String extractAddress(Document document) {
+        Element addressElement = document.select("address")
+                .first();
+
+        if (addressElement.html().contains("</a>"))
+            addressElement = addressElement.select("p")
+                    .first();
+
+        return addressElement.ownText();
     }
 }

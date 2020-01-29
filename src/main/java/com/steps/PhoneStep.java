@@ -1,12 +1,19 @@
 package com.steps;
 
+import com.Account;
 import com.utils.DAO;
+import com.utils.Utils;
 import org.json.JSONObject;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
 public class PhoneStep implements Step {
+    private Account account;
     private DAO dao;
+
+    public PhoneStep(Account account) {
+        this.account = account;
+    }
 
     public static boolean isResponsible(Document document) {
         String body = document.body().text();
@@ -21,15 +28,8 @@ public class PhoneStep implements Step {
         String regex = "[^\\d]+";
         String[] numbers = value.split(regex);
 
-        //TODO extract numbers
-        if (value.matches("\\+\\d+|\\d+")) {
-            //single number
-
-//            account.setPhone(value);
-//            dao.save(account);
-        } else {
-            //multiple numbers
-            Document document1 = Jsoup.parse(value);
+        for (String number : numbers) {
+            dao.save(new Account(account, number));
         }
     }
 }

@@ -9,11 +9,17 @@ public class Account {
     public Account() {
     }
 
-    public Account(String phone, String name, String address, String dateRegistered) {
-        this.phone = phone;
+    public Account(String name, String address, String dateRegistered) {
         this.name = name;
         this.address = address;
         this.dateRegistered = dateRegistered;
+    }
+
+    public Account(Account account, String phone) {
+        this.phone = phone;
+        this.address = account.address;
+        this.dateRegistered = account.dateRegistered;
+        this.name = account.name;
     }
 
     public String getPhone() {
@@ -28,27 +34,24 @@ public class Account {
         return name;
     }
 
-    public Account setName(String name) {
+    public void setName(String name) {
         this.name = name;
-        return this;
     }
 
     public String getAddress() {
         return address;
     }
 
-    public Account setAddress(String address) {
+    public void setAddress(String address) {
         this.address = address;
-        return this;
     }
 
     public String getDateRegistered() {
         return dateRegistered;
     }
 
-    public Account setDateRegistered(String dateRegistered) {
+    public void setDateRegistered(String dateRegistered) {
         this.dateRegistered = dateRegistered;
-        return this;
     }
 
     @Override

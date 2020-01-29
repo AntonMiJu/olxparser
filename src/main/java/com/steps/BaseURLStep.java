@@ -9,7 +9,7 @@ import org.jsoup.select.Elements;
 import java.io.IOException;
 
 public class BaseURLStep implements Step {
-    public static boolean isResponsible(Document document) throws IOException {
+    public static boolean isResponsible(Document document) {
         Elements el = document.select("section#searchmain-container");
         return !el.isEmpty();
     }
