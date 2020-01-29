@@ -17,19 +17,25 @@ public class CategoryStep implements Step {
     }
 
     public void parse(Document document) throws IOException {
+        if (!document.baseUri().contains("?page=")) {
+            createNextPageSteps(document);
+        }
+
+        Elements links = document.select("div.offer-wrapper")
+                .select("div.space.rel")
+                .select("a[href]");
+
+        for (Element el : links) {
+            new Router(Utils.defaultStep(el.attr("href"))).route();
+        }
+    }
+
+    private void createNextPageSteps(Document document) throws IOException {
         int lastPageIndex = getQuantityOfPages(document);
 
-        for (int i = 1; i <= lastPageIndex; i++) {
+        for (int i = 2; i <= lastPageIndex; i++) {
             String pageUrl = document.baseUri() + suffixForLink + i;
-            System.out.println(pageUrl);
-
-            Elements links = document.select("div.offer-wrapper")
-                    .select("div.space.rel")
-                    .select("a[href]");
-
-            for (Element el : links) {
-                new Router(Utils.defaultStep(el.attr("href"))).route();
-            }
+            new Router(Utils.defaultStep(pageUrl)).route();
         }
     }
 
