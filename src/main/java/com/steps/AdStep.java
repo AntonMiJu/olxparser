@@ -28,17 +28,19 @@ public class AdStep implements Step {
         if (!document.select("div#offer_removed_by_user").isEmpty() || !document.select("div#offer_outdated").isEmpty())
             return;
 
-        //wrong address for https://www.olx.ua/uk/obyavlenie/prodam-betonnyy-garazh-v-nachale-kurskoy-za-21-mag-stg-3-5-5-m-IDGOCgc.html#7d56097d14
-        String address = document.select("address")
-                .select("p")
-                .first()
-                .text();
+        Element addressElement = document.select("address")
+                .first();
+
+        if (addressElement.html().contains("</a>"))
+            addressElement = addressElement.select("p").first();
+
+        String address = addressElement.ownText();
 
         Element nameElement = document.select("div.offer-user__details")
                 .select("h4")
                 .first();
 
-        if (nameElement.html().contains("<a>"))
+        if (nameElement.html().contains("</a>"))
             nameElement = nameElement.select("a").first();
 
         String name = nameElement.text();

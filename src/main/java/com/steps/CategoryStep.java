@@ -11,7 +11,7 @@ import java.io.IOException;
 public class CategoryStep implements Step {
     private static final String suffixForLink = "?page=";
 
-    public static boolean isResponsible(Document document) throws IOException {
+    public static boolean isResponsible(Document document) {
         Elements el = document.select("div.pager.rel.clr");
         return !el.isEmpty();
     }
@@ -33,7 +33,7 @@ public class CategoryStep implements Step {
         }
     }
 
-    private int getQuantityOfPages(Document document) throws IOException {
+    private int getQuantityOfPages(Document document) {
         String lastPage = document.select("a[data-cy='page-link-last']")
                 .select("span")
                 .first()

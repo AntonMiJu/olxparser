@@ -18,6 +18,9 @@ public class PhoneStep implements Step {
         JSONObject object = new JSONObject(document.body().text());
         String value = object.get("value").toString().replace(" ", "");
 
+        String regex = "[^\\d]+";
+        String[] numbers = value.split(regex);
+
         //TODO extract numbers
         if (value.matches("\\+\\d+|\\d+")) {
             //single number
