@@ -26,30 +26,42 @@ public class Router {
     }
 
     public void route() {
-        Step step;
-
         try {
             Connection.Response response = connection.execute();
+
+            if (isNotValidResponse(response))
+                return;
+
             String responseBody = response.body();
             Document document = Jsoup.parse(responseBody, response.url().toString());
 
-            if (BaseURLStep.isResponsible(document)) {
-                step = new BaseURLStep(document);
-            } else if (CategoryStep.isResponsible(document)) {
-                step = new CategoryStep(document);
-            } else if (AdStep.isResponsible(document)) {
-                step = new AdStep(connection.response().cookie("PHPSESSID"), document);
-            } else if (PhoneStep.isResponsible(responseBody)) {
-                step = new PhoneStep(utils.getAccount(), responseBody);
-            } else {
-                System.out.println("500: Can't find step for that URL");
+            Step step = createStep(responseBody, document);
+            if (step == null)
                 return;
-            }
 
 //            new Thread(step).start();
             step.run(); //comment this line and uncomment line above to work in multithreading way
         } catch (IOException e) {
             System.err.println("Exception in router");
         }
+    }
+
+    private Step createStep(String responseBody, Document document) {
+        if (BaseURLStep.isResponsible(document)) {
+            return new BaseURLStep(document);
+        } else if (CategoryStep.isResponsible(document)) {
+            return new CategoryStep(document);
+        } else if (AdStep.isResponsible(document)) {
+            return new AdStep(connection.response().cookie("PHPSESSID"), document);
+        } else if (PhoneStep.isResponsible(responseBody)) {
+            return new PhoneStep(utils.getAccount(), responseBody);
+        } else {
+            System.out.println("500: Can't find step for that URL");
+            return null;
+        }
+    }
+
+    private boolean isNotValidResponse(Connection.Response response) {
+        return response.statusCode() == 404;
     }
 }

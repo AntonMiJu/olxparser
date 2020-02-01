@@ -22,7 +22,9 @@ public class Utils {
 
     //TODO implement userAgent setting on random base
     public static Connection defaultStep(String url) {
-        return Jsoup.connect(url)/*.userAgent()*/;
+        return Jsoup.connect(url)
+                .ignoreHttpErrors(true)
+                /*.userAgent()*/;
     }
 
     public static Connection phoneStep(String url, String referrer, String cookie) {
@@ -30,6 +32,7 @@ public class Utils {
                 .ignoreContentType(true)
                 .referrer(referrer)
                 .cookie("PHPSESSID", cookie)
+                .ignoreHttpErrors(true)
                 /*.userAgent()*/;
     }
 }
