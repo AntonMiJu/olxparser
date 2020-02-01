@@ -7,6 +7,7 @@ import com.steps.PhoneStep;
 import com.steps.Step;
 import com.utils.Utils;
 import org.jsoup.Connection;
+import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
 import java.io.IOException;
@@ -28,7 +29,9 @@ public class Router {
         Step step;
 
         try {
-            Document document = connection.get();
+            Connection.Response response = connection.execute();
+            String responseBody = response.body();
+            Document document = Jsoup.parse(responseBody, response.url().toString());
 
             if (BaseURLStep.isResponsible(document)) {
                 step = new BaseURLStep(document);
@@ -36,15 +39,15 @@ public class Router {
                 step = new CategoryStep(document);
             } else if (AdStep.isResponsible(document)) {
                 step = new AdStep(connection.response().cookie("PHPSESSID"), document);
-            } else if (PhoneStep.isResponsible(document)) {
-                step = new PhoneStep(utils.getAccount(), document);
+            } else if (PhoneStep.isResponsible(responseBody)) {
+                step = new PhoneStep(utils.getAccount(), responseBody);
             } else {
                 System.out.println("500: Can't find step for that URL");
-                //TODO some mechanism for processing this situations without interrupting of program
                 return;
             }
 
-            step.run();
+//            new Thread(step).start();
+            step.run(); //comment this line and uncomment line above to work in multithreading way
         } catch (IOException e) {
             System.err.println("Exception in router");
         }

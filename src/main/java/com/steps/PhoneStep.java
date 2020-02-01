@@ -3,22 +3,26 @@ package com.steps;
 import com.Account;
 import com.utils.DAO;
 import com.utils.ExcelDAO;
+import org.apache.commons.lang3.StringUtils;
 import org.json.JSONObject;
+import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class PhoneStep implements Step {
     private Account account;
-    private Document document;
+    private String responseBody;
     private DAO dao;
 
-    public PhoneStep(Account account, Document document) {
+    public PhoneStep(Account account, String responseBody) {
         this.account = account;
-        this.document = document;
+        this.responseBody = responseBody;
     }
 
-    public static boolean isResponsible(Document document) {
-        String body = document.body().text();
-        return body.startsWith("{") && body.contains("\"value\"");
+    public static boolean isResponsible(String responseBody) {
+        return responseBody.startsWith("{") && responseBody.contains("\"value\"");
     }
 
     @Override
@@ -28,14 +32,20 @@ public class PhoneStep implements Step {
 
     @Override
     public void parse() {
-        JSONObject object = new JSONObject(document.body().text());
-        String value = object.get("value").toString().replace(" ", "");
+        JSONObject object = new JSONObject(responseBody);
 
-        String regex = "[^\\d]+";
-        String[] numbers = value.split(regex);
+        List<String> numbers = new ArrayList<>();
+        String value = object.get("value").toString();
+
+        if (StringUtils.contains(value, "span")) {
+            Document document = Jsoup.parse(value);
+            numbers.addAll(document.select("span.block").eachText());
+        } else {
+            numbers.add(value);
+        }
 
         for (String number : numbers) {
-            System.out.println(new Account(account, number).toString());
+            System.out.println(new Account(account, number.replaceAll("\\D+", "")).toString());
             //getDao().save(new Account(account, number));
         }
     }
