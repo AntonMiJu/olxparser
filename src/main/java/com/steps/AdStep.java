@@ -8,8 +8,6 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
-import java.io.IOException;
-
 public class AdStep implements Step {
     public static final String PHONE_TEMPLATE = "https://www.olx.ua/uk/ajax/misc/contact/phone/%s/?pt=%s";
 
@@ -28,10 +26,10 @@ public class AdStep implements Step {
 
     @Override
     public void run() {
-
+        parse();
     }
 
-    public void parse() throws IOException {
+    public void parse() {
         System.out.println(document.baseUri());
 
         if (isNotRelevantAd(document))
@@ -66,9 +64,9 @@ public class AdStep implements Step {
 
     private String extractDate(Document document) {
         return document.select("div.offer-user__details")
-                    .select("span.user-since")
-                    .first()
-                    .text();
+                .select("span.user-since")
+                .first()
+                .text();
     }
 
     private String extractName(Document document) {

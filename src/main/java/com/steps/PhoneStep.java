@@ -3,9 +3,7 @@ package com.steps;
 import com.Account;
 import com.utils.DAO;
 import com.utils.ExcelDAO;
-import com.utils.Utils;
 import org.json.JSONObject;
-import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
 public class PhoneStep implements Step {
@@ -25,7 +23,7 @@ public class PhoneStep implements Step {
 
     @Override
     public void run() {
-
+        parse();
     }
 
     @Override
@@ -37,7 +35,8 @@ public class PhoneStep implements Step {
         String[] numbers = value.split(regex);
 
         for (String number : numbers) {
-            getDao().save(new Account(account, number));
+            System.out.println(new Account(account, number).toString());
+            //getDao().save(new Account(account, number));
         }
     }
 

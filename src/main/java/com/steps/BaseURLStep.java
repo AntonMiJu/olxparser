@@ -6,8 +6,6 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
-import java.io.IOException;
-
 public class BaseURLStep implements Step {
     private Document document;
 
@@ -22,10 +20,10 @@ public class BaseURLStep implements Step {
 
     @Override
     public void run() {
-
+        parse();
     }
 
-    public void parse() throws IOException {
+    public void parse() {
         Elements linksOnCategories = document.select("section#searchmain-container")
                 .select("div.subcategories-list.clr")
                 .select("li.fleft")

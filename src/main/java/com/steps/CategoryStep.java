@@ -6,8 +6,6 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
-import java.io.IOException;
-
 public class CategoryStep implements Step {
     private static final String suffixForLink = "?page=";
 
@@ -24,10 +22,10 @@ public class CategoryStep implements Step {
 
     @Override
     public void run() {
-
+        parse();
     }
 
-    public void parse() throws IOException {
+    public void parse() {
         if (!document.baseUri().contains("?page=")) {
             createNextPageSteps(document);
         }
@@ -41,7 +39,7 @@ public class CategoryStep implements Step {
         }
     }
 
-    private void createNextPageSteps(Document document) throws IOException {
+    private void createNextPageSteps(Document document) {
         int lastPageIndex = getQuantityOfPages(document);
 
         for (int i = 2; i <= lastPageIndex; i++) {

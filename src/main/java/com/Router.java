@@ -24,25 +24,29 @@ public class Router {
         this.utils = utils;
     }
 
-    public void route() throws IOException {
+    public void route() {
         Step step;
 
-        Document document = connection.get();
+        try {
+            Document document = connection.get();
 
-        if (BaseURLStep.isResponsible(document)) {
-            step = new BaseURLStep(document);
-        } else if (CategoryStep.isResponsible(document)) {
-            step = new CategoryStep(document);
-        } else if (AdStep.isResponsible(document)) {
-            step = new AdStep(connection.response().cookie("PHPSESSID"), document);
-        } else if (PhoneStep.isResponsible(document)) {
-            step = new PhoneStep(utils.getAccount(), document);
-        } else {
-            System.out.println("500: Can't find step for that URL");
-            //TODO some mechanism for processing this situations without interrupting of program
-            return;
+            if (BaseURLStep.isResponsible(document)) {
+                step = new BaseURLStep(document);
+            } else if (CategoryStep.isResponsible(document)) {
+                step = new CategoryStep(document);
+            } else if (AdStep.isResponsible(document)) {
+                step = new AdStep(connection.response().cookie("PHPSESSID"), document);
+            } else if (PhoneStep.isResponsible(document)) {
+                step = new PhoneStep(utils.getAccount(), document);
+            } else {
+                System.out.println("500: Can't find step for that URL");
+                //TODO some mechanism for processing this situations without interrupting of program
+                return;
+            }
+
+            step.run();
+        } catch (IOException e) {
+            System.err.println("Exception in router");
         }
-
-        step.parse();
     }
 }
