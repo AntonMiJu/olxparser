@@ -2,6 +2,7 @@ package com.steps;
 
 import com.Account;
 import com.utils.DAO;
+import com.utils.ExcelDAO;
 import com.utils.Utils;
 import org.json.JSONObject;
 import org.jsoup.Jsoup;
@@ -9,10 +10,12 @@ import org.jsoup.nodes.Document;
 
 public class PhoneStep implements Step {
     private Account account;
+    private Document document;
     private DAO dao;
 
-    public PhoneStep(Account account) {
+    public PhoneStep(Account account, Document document) {
         this.account = account;
+        this.document = document;
     }
 
     public static boolean isResponsible(Document document) {
@@ -21,7 +24,12 @@ public class PhoneStep implements Step {
     }
 
     @Override
-    public void parse(Document document) {
+    public void run() {
+
+    }
+
+    @Override
+    public void parse() {
         JSONObject object = new JSONObject(document.body().text());
         String value = object.get("value").toString().replace(" ", "");
 
@@ -29,7 +37,13 @@ public class PhoneStep implements Step {
         String[] numbers = value.split(regex);
 
         for (String number : numbers) {
-            dao.save(new Account(account, number));
+            getDao().save(new Account(account, number));
         }
+    }
+
+    private DAO getDao() {
+        if (dao == null)
+            dao = new ExcelDAO();
+        return dao;
     }
 }

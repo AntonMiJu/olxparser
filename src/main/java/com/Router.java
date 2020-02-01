@@ -30,19 +30,19 @@ public class Router {
         Document document = connection.get();
 
         if (BaseURLStep.isResponsible(document)) {
-            step = new BaseURLStep();
+            step = new BaseURLStep(document);
         } else if (CategoryStep.isResponsible(document)) {
-            step = new CategoryStep();
+            step = new CategoryStep(document);
         } else if (AdStep.isResponsible(document)) {
-            step = new AdStep(connection.response().cookie("PHPSESSID"));
+            step = new AdStep(connection.response().cookie("PHPSESSID"), document);
         } else if (PhoneStep.isResponsible(document)) {
-            step = new PhoneStep(utils.getAccount());
+            step = new PhoneStep(utils.getAccount(), document);
         } else {
             System.out.println("500: Can't find step for that URL");
             //TODO some mechanism for processing this situations without interrupting of program
             return;
         }
 
-        step.parse(document);
+        step.parse();
     }
 }

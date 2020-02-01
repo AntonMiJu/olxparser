@@ -11,12 +11,23 @@ import java.io.IOException;
 public class CategoryStep implements Step {
     private static final String suffixForLink = "?page=";
 
+    private Document document;
+
+    public CategoryStep(Document document) {
+        this.document = document;
+    }
+
     public static boolean isResponsible(Document document) {
         Elements el = document.select("div.pager.rel.clr");
         return !el.isEmpty();
     }
 
-    public void parse(Document document) throws IOException {
+    @Override
+    public void run() {
+
+    }
+
+    public void parse() throws IOException {
         if (!document.baseUri().contains("?page=")) {
             createNextPageSteps(document);
         }

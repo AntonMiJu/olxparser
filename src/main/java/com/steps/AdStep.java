@@ -12,10 +12,13 @@ import java.io.IOException;
 
 public class AdStep implements Step {
     public static final String PHONE_TEMPLATE = "https://www.olx.ua/uk/ajax/misc/contact/phone/%s/?pt=%s";
-    private String cookie;
 
-    public AdStep(String cookie) {
+    private String cookie;
+    private Document document;
+
+    public AdStep(String cookie, Document document) {
         this.cookie = cookie;
+        this.document = document;
     }
 
     public static boolean isResponsible(Document document) {
@@ -23,7 +26,12 @@ public class AdStep implements Step {
         return !el.isEmpty();
     }
 
-    public void parse(Document document) throws IOException {
+    @Override
+    public void run() {
+
+    }
+
+    public void parse() throws IOException {
         System.out.println(document.baseUri());
 
         if (isNotRelevantAd(document))

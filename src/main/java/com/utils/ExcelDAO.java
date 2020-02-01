@@ -36,26 +36,27 @@ public class ExcelDAO implements DAO {
 
     @Override
     public Account getByPhone(String phone) {
-        try(FileInputStream inputStream = new FileInputStream(excelFilePath);
-            Workbook workbook = getWorkbook(inputStream, excelFilePath)) {
+        try (FileInputStream inputStream = new FileInputStream(excelFilePath);
+                Workbook workbook = getWorkbook(inputStream, excelFilePath)) {
             Sheet sheet = workbook.getSheetAt(0);
             Row row = sheet.getRow(findRow(sheet, 0, phone));
             return rowToAccount(row);
-        } catch (IOException e){
+        } catch (IOException e) {
             System.out.println("ExcelDAO method getByPhone() something gone wrong");
         }
         return null;
     }
 
+    //TODO write logic for that method
     @Override
     public List<Account> getByAddress(String address) {
         return null;
     }
 
-    private int findRow(Sheet sheet, int cellIndex, String value){
-        for (Row row : sheet){
+    private int findRow(Sheet sheet, int cellIndex, String value) {
+        for (Row row : sheet) {
             Cell cell = row.getCell(cellIndex);
-            if (cell.getCellType()== CellType.STRING && cell.getStringCellValue().equals(value))
+            if (cell.getCellType() == CellType.STRING && cell.getStringCellValue().equals(value))
                 return row.getRowNum();
         }
         return 0;
@@ -65,20 +66,22 @@ public class ExcelDAO implements DAO {
         Workbook wb = null;
         if (excelFilePath.endsWith("xlsx")) {
             wb = new XSSFWorkbook(fis);
-        } else if (excelFilePath.endsWith("xls")){
+        } else if (excelFilePath.endsWith("xls")) {
             wb = new HSSFWorkbook(fis);
-        }else {
+        } else {
             throw new IOException("File has wrong format.");
         }
         return wb;
     }
 
-    private Account rowToAccount(Row row){
+    private Account rowToAccount(Row row) {
         Account account = new Account();
+
         account.setPhone(row.getCell(0).getStringCellValue());
         account.setName(row.getCell(1).getStringCellValue());
         account.setAddress(row.getCell(2).getStringCellValue());
         account.setDateRegistered(row.getCell(3).getStringCellValue());
+
         return account;
     }
 }
