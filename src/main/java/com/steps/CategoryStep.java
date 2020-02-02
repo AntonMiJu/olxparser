@@ -31,6 +31,7 @@ public class CategoryStep implements Step {
         }
 
         Elements links = document.select("div.offer-wrapper")
+                .select("td.title-cell")
                 .select("div.space.rel")
                 .select("a[href]");
 
