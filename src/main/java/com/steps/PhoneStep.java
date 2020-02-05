@@ -45,9 +45,17 @@ public class PhoneStep implements Step {
         }
 
         for (String number : numbers) {
-            System.out.println(new Account(account, number.replaceAll("\\D+", "")).toString());
+            System.out.println(new Account(account, validateNumber(number.replaceAll("\\D+", "")).toString()));
             //getDao().save(new Account(account, number));
         }
+    }
+
+    private String validateNumber(String number){
+        if (number.startsWith("0"))
+            number = "38"+number;
+        if (number.startsWith("8"))
+            number = "3"+number;
+        return number;
     }
 
     private DAO getDao() {
