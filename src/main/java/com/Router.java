@@ -39,10 +39,13 @@ public class Router {
             if (step == null)
                 return;
 
-//            new Thread(step).start();
-            step.run(); //comment this line and uncomment line above to work in multithreading way
+            new Thread(step).start();
+            Thread.sleep(450);
+//            step.run(); //uncomment this line and comment two lines above to work without multithreading way
         } catch (IOException e) {
             System.err.println("Exception in router");
+        } catch (InterruptedException e){
+            System.err.println("Thread exception");
         }
     }
 
@@ -56,7 +59,7 @@ public class Router {
         } else if (PhoneStep.isResponsible(responseBody)) {
             return new PhoneStep(utils.getAccount(), responseBody);
         } else {
-            System.out.println("500: Can't find step for that URL");
+            System.err.println("500: Can't find step for that URL");
             return null;
         }
     }
