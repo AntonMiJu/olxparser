@@ -6,6 +6,7 @@ import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import java.io.*;
+import java.util.ArrayList;
 import java.util.List;
 
 public class ExcelDAO implements DAO {
@@ -29,7 +30,7 @@ public class ExcelDAO implements DAO {
             workbook.write(outputStream);
             return account;
         } catch (IOException e) {
-            System.out.println("ExcelDAO method save() something gone wrong");
+            System.err.println("ExcelDAO method save() something gone wrong");
         }
         return null;
     }
@@ -37,23 +38,31 @@ public class ExcelDAO implements DAO {
     @Override
     public Account getByPhone(String phone) {
         try (FileInputStream inputStream = new FileInputStream(excelFilePath);
-                Workbook workbook = getWorkbook(inputStream, excelFilePath)) {
+             Workbook workbook = getWorkbook(inputStream, excelFilePath)) {
             Sheet sheet = workbook.getSheetAt(0);
-            Row row = sheet.getRow(findRow(sheet, 0, phone));
+            Row row = sheet.getRow(findRowByValue(sheet, 0, phone));
             return rowToAccount(row);
         } catch (IOException e) {
-            System.out.println("ExcelDAO method getByPhone() something gone wrong");
+            System.err.println("ExcelDAO method getByPhone() something gone wrong");
         }
         return null;
     }
 
-    //TODO write logic for that method
     @Override
     public List<Account> getByAddress(String address) {
-        return null;
+        List<Account> accounts = new ArrayList<>();
+        try (FileInputStream inputStream = new FileInputStream(excelFilePath);
+             Workbook workbook = getWorkbook(inputStream, excelFilePath)) {
+            Sheet sheet = workbook.getSheetAt(0);
+            for (int index : findFewRowsByValue(sheet, 2, address))
+                accounts.add(rowToAccount(sheet.getRow(index)));
+        } catch (IOException e) {
+            System.out.println();
+        }
+        return accounts;
     }
 
-    private int findRow(Sheet sheet, int cellIndex, String value) {
+    private int findRowByValue(Sheet sheet, int cellIndex, String value) {
         for (Row row : sheet) {
             Cell cell = row.getCell(cellIndex);
             if (cell.getCellType() == CellType.STRING && cell.getStringCellValue().equals(value))
@@ -62,8 +71,18 @@ public class ExcelDAO implements DAO {
         return 0;
     }
 
+    private List<Integer> findFewRowsByValue(Sheet sheet, int cellIndex, String value){
+        List<Integer> indexesOfRows = new ArrayList<>();
+        for (Row row : sheet){
+            Cell cell = row.getCell(cellIndex);
+            if (cell.getCellType() == CellType.STRING && cell.getStringCellValue().equals(value))
+                indexesOfRows.add(row.getRowNum());
+        }
+        return indexesOfRows;
+    }
+
     private Workbook getWorkbook(FileInputStream fis, String excelFilePath) throws IOException {
-        Workbook wb = null;
+        Workbook wb;
         if (excelFilePath.endsWith("xlsx")) {
             wb = new XSSFWorkbook(fis);
         } else if (excelFilePath.endsWith("xls")) {

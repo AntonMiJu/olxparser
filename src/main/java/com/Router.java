@@ -41,10 +41,11 @@ public class Router {
 
             new Thread(step).start();
             Thread.sleep(450);
-//            step.run(); //uncomment this line and comment two lines above to work without multithreading way
+            /*uncomment line below and comment two lines above to work without multithreading way*/
+//            step.run();
         } catch (IOException e) {
             System.err.println("Exception in router");
-        } catch (InterruptedException e){
+        } catch (InterruptedException e) {
             System.err.println("Thread exception");
         }
     }
