@@ -10,13 +10,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ExcelDAO implements DAO {
-    private static final String excelFilePath = "test.xlsx";
+    private static final String EXCEL_FILE_PATH = "Phones.xls";
 
     @Override
-    public Account save(Account account) {
-        try (FileInputStream inputStream = new FileInputStream(excelFilePath);
-             Workbook workbook = getWorkbook(inputStream, excelFilePath);
-             FileOutputStream outputStream = new FileOutputStream(new File(excelFilePath))) {
+    public synchronized Account save(Account account) {
+        try (FileInputStream inputStream = new FileInputStream(new File(EXCEL_FILE_PATH));
+             Workbook workbook = getWorkbook(inputStream, EXCEL_FILE_PATH);
+             FileOutputStream outputStream = new FileOutputStream(new File(EXCEL_FILE_PATH))) {
 
             Sheet sheet = workbook.getSheetAt(0);
             int lastRowIndex = sheet.getLastRowNum();
@@ -36,9 +36,9 @@ public class ExcelDAO implements DAO {
     }
 
     @Override
-    public Account getByPhone(String phone) {
-        try (FileInputStream inputStream = new FileInputStream(excelFilePath);
-             Workbook workbook = getWorkbook(inputStream, excelFilePath)) {
+    public synchronized Account getByPhone(String phone) {
+        try (FileInputStream inputStream = new FileInputStream(EXCEL_FILE_PATH);
+             Workbook workbook = getWorkbook(inputStream, EXCEL_FILE_PATH)) {
             Sheet sheet = workbook.getSheetAt(0);
             Row row = sheet.getRow(findRowByValue(sheet, 0, phone));
             return rowToAccount(row);
@@ -49,10 +49,10 @@ public class ExcelDAO implements DAO {
     }
 
     @Override
-    public List<Account> getByAddress(String address) {
+    public synchronized List<Account> getByAddress(String address) {
         List<Account> accounts = new ArrayList<>();
-        try (FileInputStream inputStream = new FileInputStream(excelFilePath);
-             Workbook workbook = getWorkbook(inputStream, excelFilePath)) {
+        try (FileInputStream inputStream = new FileInputStream(EXCEL_FILE_PATH);
+             Workbook workbook = getWorkbook(inputStream, EXCEL_FILE_PATH)) {
             Sheet sheet = workbook.getSheetAt(0);
             for (int index : findFewRowsByValue(sheet, 2, address))
                 accounts.add(rowToAccount(sheet.getRow(index)));
@@ -62,7 +62,7 @@ public class ExcelDAO implements DAO {
         return accounts;
     }
 
-    private int findRowByValue(Sheet sheet, int cellIndex, String value) {
+    private synchronized int findRowByValue(Sheet sheet, int cellIndex, String value) {
         for (Row row : sheet) {
             Cell cell = row.getCell(cellIndex);
             if (cell.getCellType() == CellType.STRING && cell.getStringCellValue().equals(value))
@@ -71,7 +71,7 @@ public class ExcelDAO implements DAO {
         return 0;
     }
 
-    private List<Integer> findFewRowsByValue(Sheet sheet, int cellIndex, String value){
+    private synchronized List<Integer> findFewRowsByValue(Sheet sheet, int cellIndex, String value){
         List<Integer> indexesOfRows = new ArrayList<>();
         for (Row row : sheet){
             Cell cell = row.getCell(cellIndex);
@@ -81,19 +81,23 @@ public class ExcelDAO implements DAO {
         return indexesOfRows;
     }
 
-    private Workbook getWorkbook(FileInputStream fis, String excelFilePath) throws IOException {
+    private synchronized Workbook getWorkbook(FileInputStream fis, String excelFilePath) throws IOException {
         Workbook wb;
-        if (excelFilePath.endsWith("xlsx")) {
-            wb = new XSSFWorkbook(fis);
-        } else if (excelFilePath.endsWith("xls")) {
-            wb = new HSSFWorkbook(fis);
-        } else {
-            throw new IOException("File has wrong format.");
+        if (new File(excelFilePath).exists())
+            wb = WorkbookFactory.create(new File(excelFilePath));
+        else {
+            if (excelFilePath.endsWith("xlsx")) {
+                wb = new XSSFWorkbook(fis);
+            } else if (excelFilePath.endsWith("xls")) {
+                wb = new HSSFWorkbook(fis);
+            } else {
+                throw new IOException("File has wrong format.");
+            }
         }
         return wb;
     }
 
-    private Account rowToAccount(Row row) {
+    private synchronized Account rowToAccount(Row row) {
         Account account = new Account();
 
         account.setPhone(row.getCell(0).getStringCellValue());

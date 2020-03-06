@@ -46,7 +46,7 @@ public class PhoneStep implements Step {
 
         for (String number : numbers) {
             System.out.println(new Account(account, validateNumber(number.replaceAll("\\D+", ""))));
-            //getDao().save(new Account(account, number));
+//            getDao().save(new Account(account, validateNumber(number.replaceAll("\\D+", ""))));
         }
     }
 
